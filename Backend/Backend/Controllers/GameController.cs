@@ -21,6 +21,7 @@ public class GameController : ControllerBase
         return Ok(addedConfig);
     }
 
+    [HttpGet("failed/{username}")]
     public ActionResult<IEnumerable<FailedGameDTO>> GetFailedGames(string username)
     {
         var failedGames = _gameService.GetFailedGamesByPlayer(username);
