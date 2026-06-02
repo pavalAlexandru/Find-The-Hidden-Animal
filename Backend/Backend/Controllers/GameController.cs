@@ -9,15 +9,18 @@ namespace Backend.Controllers;
 public class GameController : ControllerBase
 {
     private readonly IGameService _gameService;
-    public GameController(IGameService gameService)
+    private readonly ILogger<GameController> _logger;
+    public GameController(IGameService gameService,  ILogger<GameController> logger)
     {
         _gameService = gameService;
+        _logger = logger;
     }
 
     [HttpPost("config")]
     public ActionResult<GameConfig> AddConfig([FromBody] GameConfig config)
     {
         var addedConfig = _gameService.AddGameConfig(config);
+        _logger.LogInformation($"New configuration added: Animal={config.AnimalName}, Row={config.Row}, Column={config.Column}");
         return Ok(addedConfig);
     }
 
@@ -25,6 +28,7 @@ public class GameController : ControllerBase
     public ActionResult<IEnumerable<FailedGameDTO>> GetFailedGames(string username)
     {
         var failedGames = _gameService.GetFailedGamesByPlayer(username);
+        _logger.LogInformation($"User {username} has failed games.");
         return Ok(failedGames);
     }
     
