@@ -1,4 +1,5 @@
 using Backend.Repositories;
+using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=JocAnimaleMPP.db"));
+
+builder.Services.AddScoped<IGameSessionRepository, GameSessionRepository>();
+builder.Services.AddScoped<IGameConfigRepository, GameConfigRepository>();
+
+builder.Services.AddScoped<IGameService, GameService>();
 
 builder.Services.AddOpenApi();
 var app = builder.Build();
