@@ -2,6 +2,7 @@ import { useState } from "react";
 import Login from "./components/Login";
 import GameBoard from "./components/GameBoard";
 import "./App.css";
+import LeaderBoard from "./components/LeaderBoard";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -13,6 +14,9 @@ function App() {
       ) : (
         <GameBoard username={username} onLogout={() => setUsername("")} />
       )}
+
+      <hr style={{ margin: "30px 0", border: "1px solid #eee" }} />
+      <LeaderBoard />
     </div>
   );
 }

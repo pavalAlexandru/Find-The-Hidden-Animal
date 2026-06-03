@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-function Leaderboard() {
+function LeaderBoard() {
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
@@ -23,5 +23,36 @@ function Leaderboard() {
     };
   }, []);
 
-  return <div>...</div>;
+  return (
+    <div className="leaderboard-wrapper">
+      <h3>Live Leaderboard</h3>
+
+      {leaderboardData.length === 0 ? (
+        <p className="no-data">There are no finished games</p>
+      ) : (
+        <table className="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Date and Time</th>
+              <th>Tries</th>
+              <th>Animal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboardData.map((game, index) => (
+              <tr key={index}>
+                <td>{game.playerName}</td>
+                <td>{new Date(game.timestamp).toLocaleString()}</td>
+                <td>{game.attempts}</td>
+                <td>{game.animalName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
 }
+
+export default LeaderBoard;
