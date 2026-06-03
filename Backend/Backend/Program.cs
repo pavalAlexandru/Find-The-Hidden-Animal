@@ -1,3 +1,4 @@
+using Backend.Hubs;
 using Backend.Repositories;
 using Backend.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ builder.Services.AddScoped<IGameConfigRepository, GameConfigRepository>();
 
 builder.Services.AddScoped<IGameService, GameService>();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options =>
@@ -31,6 +34,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors("AllowAll");
+
+app.MapHub<LeaderBoardHub>("/leaderboardHub");
 
 using (var scope = app.Services.CreateScope())
 {

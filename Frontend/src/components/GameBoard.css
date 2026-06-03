@@ -1,0 +1,48 @@
+.game-board-Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.game-header {
+  text-align: center;
+}
+
+.grid-3x4 {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  grid-template-rows: repeat(3, 80px);
+  gap: 10px;
+  background-color: #e0e0e0;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.grid-cell {
+  background-color: #3498db;
+  color: white;
+  font-size: 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.grid-cell:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.grid-cell.clicked {
+  background-color: #e74c3c;
+  cursor: not-allowed;
+}
+
+.logout-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}

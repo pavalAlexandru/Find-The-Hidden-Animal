@@ -1,6 +1,8 @@
+using Backend.Hubs;
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Backend.Controllers;
 
@@ -10,10 +12,12 @@ public class GameController : ControllerBase
 {
     private readonly IGameService _gameService;
     private readonly ILogger<GameController> _logger;
-    public GameController(IGameService gameService,  ILogger<GameController> logger)
+    private readonly IHubContext<LeaderBoardHub> _hubContext;
+    public GameController(IGameService gameService,  ILogger<GameController> logger,  IHubContext<LeaderBoardHub> hubContext)
     {
         _gameService = gameService;
         _logger = logger;
+        _hubContext = hubContext;
     }
 
     [HttpPost("config")]
