@@ -18,6 +18,17 @@ public class GameSessionRepository : IGameSessionRepository
        return entity;
    }
 
+   public GameSession GetById(int id)
+   {
+       return _context.GameSessions.FirstOrDefault(s => s.Id == id);
+   }
+
+   public void Update(GameSession entity)
+   {
+       _context.GameSessions.Update(entity);
+       _context.SaveChanges();
+   }
+
    public IEnumerable<GameSession> GetAll()
    {
        return _context.GameSessions.ToList();
@@ -33,10 +44,27 @@ public class GameSessionRepository : IGameSessionRepository
            where session.PlayerId == player.Id && session.IsWon == false
            select new FailedGameDTO
            {
-               GUessCount = session.GuessCount,
+               GuessCount = session.GuessCount,
                AnimalRow = config.Row,
                AnimalColumn = config.Column,
                ProposedPositions = _context.Guesses.Where(g => g.GameSessionId == session.Id).ToList()
            }).ToList();
+   }
+
+   public IEnumerable<LeaderboardDTO> GetLeaderboard()
+   {
+       return (from s in _context.GameSessions
+               join p in _context.Players on s.PlayerId equals p.Id
+               join c in _context.GameConfigs on s.GameConfigId equals c.Id
+               where s.IsWon
+               orderby s.DurationInSeconds ascending
+               select new LeaderboardDTO
+               {
+                   PlayerName = p.Username,
+                   Timestamp = s.StartTime,
+                   Attempts = s.GuessCount,
+                   AnimalName = c.AnimalName,
+                   DurationInSeconds = s.DurationInSeconds
+               }).ToList();
    }
 }
