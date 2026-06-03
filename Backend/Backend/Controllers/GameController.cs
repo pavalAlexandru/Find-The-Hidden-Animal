@@ -6,6 +6,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Backend.Controllers;
 
+public class GuessRequestDTO
+{
+    public string Username { get; set; }
+    public int Row { get; set; }
+    public int Column { get; set; }
+    public int AttemptNumber { get; set; }
+}
+
 [ApiController]
 [Route("api/[controller]")]
 public class GameController : ControllerBase
@@ -35,5 +43,45 @@ public class GameController : ControllerBase
         _logger.LogInformation($"User {username} has failed games.");
         return Ok(failedGames);
     }
+
+    [HttpPost("guess")]
+    public async Task<ActionResult> MakeGuess([FromBody] GuessRequestDTO request)
+    {
+        var config = _gameService.GetCurrentConfig();
+        if (config == null)
+            return BadRequest(new {message = "No config found"});
+        bool isCorrect = (request.Row == config.Row && request.Column == config.Column);
+
+        if (isCorrect)
+        {
+            var newLeaderboard = new List<object>();
+            await _hubContext.Clients.All.SendAsync("UpdateLeaderboard", newLeaderboard);
+            
+            return Ok(new { message = "Success" });
+        }
+
+        if (request.AttemptNumber >= 3)
+        {
+            return Ok(new { message = $"Failed! The animal was on {config.Row},{config.Column}" });
+        }
+
+        string direction = GetDirection(request.Row, request.Column, config.Row, config.Column);
+        return Ok(new { message = $"The animal is on {direction}" });
+    }
+
+    private string GetDirection(int guessRow, int guessColumn, int targetRow, int targetColumn)
+    {
+        string vertical = "";
+        string horizontal = "";
+        
+        if (targetRow < guessRow) vertical = "North";
+        else if (targetRow > guessRow) vertical = "South";
+        
+        if (targetColumn > guessColumn) horizontal = "East";
+        else if (targetColumn < guessColumn) horizontal = "West";
+        
+        if (vertical != "" && horizontal != "") return $"{vertical}-{horizontal}";
+        return horizontal + vertical;
+    } 
     
 }

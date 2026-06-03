@@ -23,4 +23,9 @@ public class GameService : IGameService
    {
       return _sessionRepository.GetFailedGamesByPlayer(username);
    }
+
+   public GameConfig GetCurrentConfig()
+   {
+      return _configRepository.GetAll().FirstOrDefault();
+   }
 }
