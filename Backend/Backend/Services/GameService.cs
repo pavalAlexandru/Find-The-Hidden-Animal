@@ -28,4 +28,17 @@ public class GameService : IGameService
    {
       return _configRepository.GetAll().FirstOrDefault();
    }
+
+   public GameSession AddGameSession(GameSession session)
+   {
+      return _sessionRepository.Add(session);
+   }
+
+   public IEnumerable<GameSession> GetLeaderBoardGames()
+   {
+      return _sessionRepository.GetAll()
+         .Where(s => s.IsWon == true)
+         .OrderBy(s => s.GuessCount)
+         .ToList();
+   }
 }

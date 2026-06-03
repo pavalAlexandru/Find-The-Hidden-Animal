@@ -7,7 +7,8 @@ function LeaderBoard() {
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("http://localhost:5231/leaderboardHub")
-      .withAutomaticReconnect().build;
+      .withAutomaticReconnect()
+      .build();
 
     connection
       .start()

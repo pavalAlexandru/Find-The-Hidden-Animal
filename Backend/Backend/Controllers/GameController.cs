@@ -44,17 +44,58 @@ public class GameController : ControllerBase
         return Ok(failedGames);
     }
 
+    // [HttpPost("guess")]
+    // public async Task<ActionResult> MakeGuess([FromBody] GuessRequestDTO request)
+    // {
+    //     var config = _gameService.GetCurrentConfig();
+    //     if (config == null)
+    //         return BadRequest(new {message = "No config found"});
+    //     bool isCorrect = (request.Row == config.Row && request.Column == config.Column);
+    //
+    //     if (isCorrect)
+    //     {
+    //         var session = new GameSession
+    //         {
+    //             = request.Username,
+    //             
+    //         }
+    //         
+    //         var newLeaderboard = new List<object>();
+    //         await _hubContext.Clients.All.SendAsync("UpdateLeaderboard", newLeaderboard);
+    //         
+    //         return Ok(new { message = "Success" });
+    //     }
+    //
+    //     if (request.AttemptNumber >= 3)
+    //     {
+    //         return Ok(new { message = $"Failed! The animal was on {config.Row},{config.Column}" });
+    //     }
+    //
+    //     string direction = GetDirection(request.Row, request.Column, config.Row, config.Column);
+    //     return Ok(new { message = $"The animal is on {direction}" });
+    // }
     [HttpPost("guess")]
     public async Task<ActionResult> MakeGuess([FromBody] GuessRequestDTO request)
     {
         var config = _gameService.GetCurrentConfig();
         if (config == null)
             return BadRequest(new {message = "No config found"});
+            
         bool isCorrect = (request.Row == config.Row && request.Column == config.Column);
 
         if (isCorrect)
         {
-            var newLeaderboard = new List<object>();
+            _gameService.AddGameSession(new GameSession
+            {
+                PlayerId = 1,
+                GameConfigId = config.Id,
+                StartTime = DateTime.Now,
+                DurationInSeconds = 0, 
+                GuessCount = request.AttemptNumber,
+                IsWon = true
+            });
+            
+            var newLeaderboard = _gameService.GetLeaderBoardGames();
             await _hubContext.Clients.All.SendAsync("UpdateLeaderboard", newLeaderboard);
             
             return Ok(new { message = "Success" });
@@ -62,6 +103,16 @@ public class GameController : ControllerBase
 
         if (request.AttemptNumber >= 3)
         {
+            _gameService.AddGameSession(new GameSession
+            {
+                PlayerId = 1,
+                GameConfigId = config.Id,
+                StartTime = DateTime.Now,
+                DurationInSeconds = 0,
+                GuessCount = request.AttemptNumber,
+                IsWon = false
+            });
+            
             return Ok(new { message = $"Failed! The animal was on {config.Row},{config.Column}" });
         }
 
